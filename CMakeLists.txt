@@ -2,7 +2,7 @@
 ########################################################################
 # Setup project
 ########################################################################
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 project(libsigmf LANGUAGES CXX)
 
 # c++14 used for auto return type for functions without having to do the -> declaration
@@ -19,6 +19,7 @@ include(GNUInstallDirs)
 set(LIBSIGMF_TARGET_NAME               ${PROJECT_NAME})
 set(LIBSIGMF_CONFIG_INSTALL_DIR        "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE INTERNAL "")
 set(LIBSIGMF_INCLUDE_INSTALL_DIR       "${CMAKE_INSTALL_INCLUDEDIR}")
+set(LIBSIGMF_LIB_INSTALL_DIR           "${CMAKE_INSTALL_LIBDIR}")
 set(LIBSIGMF_TARGETS_EXPORT_NAME       "${PROJECT_NAME}Targets")
 set(LIBSIGMF_CMAKE_CONFIG_TEMPLATE     "cmake/config.cmake.in")
 set(LIBSIGMF_CMAKE_CONFIG_DIR          "${CMAKE_CURRENT_BINARY_DIR}")
@@ -41,7 +42,7 @@ if (NOT ${USE_SYSTEM_FLATBUFFERS})
   message(STATUS "Flatbuffers was not found. Submodule will be used. This will require building flatc")
   set(FLATBUFFERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include")
   # Initialize Flatbuffers submodule if unititialized
-  set(FLATBUFFERS_INCLUDE_DIR 
+  set(FLATBUFFERS_INCLUDE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include
     CACHE PATH "flatbuffers include directory")
 
@@ -109,7 +110,7 @@ generate_sigmf_header(generated_antenna_ns
 generate_sigmf_header(generated_testing_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/testing_protocols.fbs"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
-  )
+)
 
 # We also carry around pre-generated headers so downstream doesn't need to build flatc
 set(LIBSIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
@@ -118,7 +119,7 @@ set(LIBSIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 # Our interface target that downstream have to use
 ########################################################################
 add_library(libsigmf
-  STATIC
+  SHARED
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/flatbuffers_json_visitor.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/json_wrap.cpp
   )
@@ -209,9 +210,10 @@ install(
 )
 install(TARGETS libsigmf
   EXPORT ${LIBSIGMF_TARGETS_EXPORT_NAME}
+  DESTINATION ${LIBSIGMF_LIB_INSTALL_DIR}
 )
 install(EXPORT ${LIBSIGMF_TARGETS_EXPORT_NAME}
   FILE ${LIBSIGMF_TARGETS_EXPORT_NAME}.cmake
   NAMESPACE ${PROJECT_NAME}::
   DESTINATION ${LIBSIGMF_CONFIG_INSTALL_DIR}
-  )
+)
