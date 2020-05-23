@@ -22,6 +22,7 @@ table Global {
 table Capture {
     sample_start:uint64;
     global_index:uint64;
+    length:uint64;
     frequency:double;
     datetime:string;
 }
