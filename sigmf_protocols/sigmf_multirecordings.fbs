@@ -1,0 +1,18 @@
+namespace multirecordings;
+
+table Global {
+    master: string;
+}
+
+table Capture {
+    streams:[string];
+}
+
+table Annotation {
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}
