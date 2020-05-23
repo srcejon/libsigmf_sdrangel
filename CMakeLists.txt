@@ -111,6 +111,10 @@ generate_sigmf_header(generated_multirecordings_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_multirecordings.fbs"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
 )
+generate_sigmf_header(generated_sdrangel_ns
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_sdrangel.fbs"
+  "${CMAKE_CURRENT_BINARY_DIR}/include"
+)
 generate_sigmf_header(generated_testing_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/testing_protocols.fbs"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
@@ -172,6 +176,7 @@ add_custom_target(libsigmf_genheaders DEPENDS
         generate_sigmf_target_generated_core_ns
         generate_sigmf_target_generated_antenna_ns
         generate_sigmf_target_generated_multirecordings_ns
+        generate_sigmf_target_generated_sdrangel_ns
         generate_sigmf_target_generated_testing_ns
 )
 

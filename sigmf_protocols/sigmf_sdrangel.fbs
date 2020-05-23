@@ -1,0 +1,17 @@
+namespace sdrangel;
+
+table Global {
+}
+
+table Capture {
+    sample_rate:int;
+}
+
+table Annotation {
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}

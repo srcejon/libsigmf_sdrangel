@@ -14,6 +14,10 @@ add_executable(example_record_multirecordings example_record_multirecordings.cpp
 target_link_libraries(example_record_multirecordings libsigmf)
 target_include_directories(example_record_multirecordings PRIVATE ${CMAKE_BINARY_DIR}/include)
 
+add_executable(example_record_sdrangel example_record_sdrangel.cpp)
+target_link_libraries(example_record_sdrangel libsigmf)
+target_include_directories(example_record_sdrangel PRIVATE ${CMAKE_BINARY_DIR}/include)
+
 add_executable(example_sigmf_json_roundtrip example_sigmf_json_roundtrip.cpp)
 target_link_libraries(example_sigmf_json_roundtrip libsigmf)
 target_include_directories(example_sigmf_json_roundtrip PRIVATE ${CMAKE_BINARY_DIR}/include)
