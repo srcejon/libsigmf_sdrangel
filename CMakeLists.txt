@@ -101,23 +101,23 @@ endfunction(generate_sigmf_header)
 ########################################################################
 generate_sigmf_header(generated_core_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_core.fbs"
-  "${CMAKE_CURRENT_BINARY_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols"
 )
 generate_sigmf_header(generated_antenna_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_antenna.fbs"
-  "${CMAKE_CURRENT_BINARY_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols"
 )
 generate_sigmf_header(generated_multirecordings_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_multirecordings.fbs"
-  "${CMAKE_CURRENT_BINARY_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols"
 )
 generate_sigmf_header(generated_sdrangel_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_sdrangel.fbs"
-  "${CMAKE_CURRENT_BINARY_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols"
 )
 generate_sigmf_header(generated_testing_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/testing_protocols.fbs"
-  "${CMAKE_CURRENT_BINARY_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols"
 )
 
 # We also carry around pre-generated headers so downstream doesn't need to build flatc
@@ -208,8 +208,24 @@ install(  # install generated headers
   FILES_MATCHING PATTERN "*.h")
 install(  # install original headers
   DIRECTORY ${CMAKE_SOURCE_DIR}/src/include
-  DESTINATION include/
+  DESTINATION .
   FILES_MATCHING PATTERN "*.h")
+
+########################################################################
+# Install FlatBuffers headers
+########################################################################
+install (
+    DIRECTORY ${CMAKE_SOURCE_DIR}/external/flatbuffers/include/flatbuffers
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h")
+
+########################################################################
+# Install NLohmann headers
+########################################################################
+install (
+    DIRECTORY ${CMAKE_SOURCE_DIR}/external/json/include/nlohmann
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.hpp")
 
 ########################################################################
 # Install cmake configuration foo

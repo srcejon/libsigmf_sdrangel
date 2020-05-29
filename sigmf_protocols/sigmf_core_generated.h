@@ -261,11 +261,13 @@ struct CaptureT : public flatbuffers::NativeTable {
   typedef Capture TableType;
   uint64_t sample_start;
   uint64_t global_index;
+  uint64_t length;
   double frequency;
   std::string datetime;
   CaptureT()
       : sample_start(0),
         global_index(0),
+        length(0),
         frequency(0.0) {
   }
 };
@@ -278,14 +280,18 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SAMPLE_START = 4,
     VT_GLOBAL_INDEX = 6,
-    VT_FREQUENCY = 8,
-    VT_DATETIME = 10
+    VT_LENGTH = 8,
+    VT_FREQUENCY = 10,
+    VT_DATETIME = 12
   };
   uint64_t sample_start() const {
     return GetField<uint64_t>(VT_SAMPLE_START, 0);
   }
   uint64_t global_index() const {
     return GetField<uint64_t>(VT_GLOBAL_INDEX, 0);
+  }
+  uint64_t length() const {
+    return GetField<uint64_t>(VT_LENGTH, 0);
   }
   double frequency() const {
     return GetField<double>(VT_FREQUENCY, 0.0);
@@ -297,6 +303,7 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyField<uint64_t>(verifier, VT_SAMPLE_START) &&
            VerifyField<uint64_t>(verifier, VT_GLOBAL_INDEX) &&
+           VerifyField<uint64_t>(verifier, VT_LENGTH) &&
            VerifyField<double>(verifier, VT_FREQUENCY) &&
            VerifyOffset(verifier, VT_DATETIME) &&
            verifier.VerifyString(datetime()) &&
@@ -315,6 +322,9 @@ struct CaptureBuilder {
   }
   void add_global_index(uint64_t global_index) {
     fbb_.AddElement<uint64_t>(Capture::VT_GLOBAL_INDEX, global_index, 0);
+  }
+  void add_length(uint64_t length) {
+    fbb_.AddElement<uint64_t>(Capture::VT_LENGTH, length, 0);
   }
   void add_frequency(double frequency) {
     fbb_.AddElement<double>(Capture::VT_FREQUENCY, frequency, 0.0);
@@ -338,10 +348,12 @@ inline flatbuffers::Offset<Capture> CreateCapture(
     flatbuffers::FlatBufferBuilder &_fbb,
     uint64_t sample_start = 0,
     uint64_t global_index = 0,
+    uint64_t length = 0,
     double frequency = 0.0,
     flatbuffers::Offset<flatbuffers::String> datetime = 0) {
   CaptureBuilder builder_(_fbb);
   builder_.add_frequency(frequency);
+  builder_.add_length(length);
   builder_.add_global_index(global_index);
   builder_.add_sample_start(sample_start);
   builder_.add_datetime(datetime);
@@ -352,6 +364,7 @@ inline flatbuffers::Offset<Capture> CreateCaptureDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     uint64_t sample_start = 0,
     uint64_t global_index = 0,
+    uint64_t length = 0,
     double frequency = 0.0,
     const char *datetime = nullptr) {
   auto datetime__ = datetime ? _fbb.CreateString(datetime) : 0;
@@ -359,6 +372,7 @@ inline flatbuffers::Offset<Capture> CreateCaptureDirect(
       _fbb,
       sample_start,
       global_index,
+      length,
       frequency,
       datetime__);
 }
@@ -668,6 +682,7 @@ inline void Capture::UnPackTo(CaptureT *_o, const flatbuffers::resolver_function
   (void)_resolver;
   { auto _e = sample_start(); _o->sample_start = _e; };
   { auto _e = global_index(); _o->global_index = _e; };
+  { auto _e = length(); _o->length = _e; };
   { auto _e = frequency(); _o->frequency = _e; };
   { auto _e = datetime(); if (_e) _o->datetime = _e->str(); };
 }
@@ -682,12 +697,14 @@ inline flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const CaptureT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _sample_start = _o->sample_start;
   auto _global_index = _o->global_index;
+  auto _length = _o->length;
   auto _frequency = _o->frequency;
   auto _datetime = _o->datetime.empty() ? 0 : _fbb.CreateString(_o->datetime);
   return core::CreateCapture(
       _fbb,
       _sample_start,
       _global_index,
+      _length,
       _frequency,
       _datetime);
 }
@@ -807,17 +824,19 @@ inline const flatbuffers::TypeTable *CaptureTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
     { flatbuffers::ET_ULONG, 0, -1 },
     { flatbuffers::ET_ULONG, 0, -1 },
+    { flatbuffers::ET_ULONG, 0, -1 },
     { flatbuffers::ET_DOUBLE, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 }
   };
   static const char * const names[] = {
     "sample_start",
     "global_index",
+    "length",
     "frequency",
     "datetime"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 4, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 5, type_codes, nullptr, nullptr, names
   };
   return &tt;
 }
