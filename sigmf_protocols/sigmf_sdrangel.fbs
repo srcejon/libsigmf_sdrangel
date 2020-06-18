@@ -1,10 +1,16 @@
 namespace sdrangel;
 
 table Global {
+    version:string;
+    qt_version:string;
+    rx_bits:int;
+    arch:string;
+    os:string;
 }
 
 table Capture {
     sample_rate:int;
+    tsms:uint64;
 }
 
 table Annotation {

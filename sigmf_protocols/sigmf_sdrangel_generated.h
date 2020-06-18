@@ -30,7 +30,13 @@ inline const flatbuffers::TypeTable *DescrTypeTable();
 
 struct GlobalT : public flatbuffers::NativeTable {
   typedef Global TableType;
-  GlobalT() {
+  std::string version;
+  std::string qt_version;
+  int32_t rx_bits;
+  std::string arch;
+  std::string os;
+  GlobalT()
+      : rx_bits(0) {
   }
 };
 
@@ -39,8 +45,39 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return GlobalTypeTable();
   }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_VERSION = 4,
+    VT_QT_VERSION = 6,
+    VT_RX_BITS = 8,
+    VT_ARCH = 10,
+    VT_OS = 12
+  };
+  const flatbuffers::String *version() const {
+    return GetPointer<const flatbuffers::String *>(VT_VERSION);
+  }
+  const flatbuffers::String *qt_version() const {
+    return GetPointer<const flatbuffers::String *>(VT_QT_VERSION);
+  }
+  int32_t rx_bits() const {
+    return GetField<int32_t>(VT_RX_BITS, 0);
+  }
+  const flatbuffers::String *arch() const {
+    return GetPointer<const flatbuffers::String *>(VT_ARCH);
+  }
+  const flatbuffers::String *os() const {
+    return GetPointer<const flatbuffers::String *>(VT_OS);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_VERSION) &&
+           verifier.VerifyString(version()) &&
+           VerifyOffset(verifier, VT_QT_VERSION) &&
+           verifier.VerifyString(qt_version()) &&
+           VerifyField<int32_t>(verifier, VT_RX_BITS) &&
+           VerifyOffset(verifier, VT_ARCH) &&
+           verifier.VerifyString(arch()) &&
+           VerifyOffset(verifier, VT_OS) &&
+           verifier.VerifyString(os()) &&
            verifier.EndTable();
   }
   GlobalT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -51,6 +88,21 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct GlobalBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
+  void add_version(flatbuffers::Offset<flatbuffers::String> version) {
+    fbb_.AddOffset(Global::VT_VERSION, version);
+  }
+  void add_qt_version(flatbuffers::Offset<flatbuffers::String> qt_version) {
+    fbb_.AddOffset(Global::VT_QT_VERSION, qt_version);
+  }
+  void add_rx_bits(int32_t rx_bits) {
+    fbb_.AddElement<int32_t>(Global::VT_RX_BITS, rx_bits, 0);
+  }
+  void add_arch(flatbuffers::Offset<flatbuffers::String> arch) {
+    fbb_.AddOffset(Global::VT_ARCH, arch);
+  }
+  void add_os(flatbuffers::Offset<flatbuffers::String> os) {
+    fbb_.AddOffset(Global::VT_OS, os);
+  }
   explicit GlobalBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -64,9 +116,39 @@ struct GlobalBuilder {
 };
 
 inline flatbuffers::Offset<Global> CreateGlobal(
-    flatbuffers::FlatBufferBuilder &_fbb) {
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> version = 0,
+    flatbuffers::Offset<flatbuffers::String> qt_version = 0,
+    int32_t rx_bits = 0,
+    flatbuffers::Offset<flatbuffers::String> arch = 0,
+    flatbuffers::Offset<flatbuffers::String> os = 0) {
   GlobalBuilder builder_(_fbb);
+  builder_.add_os(os);
+  builder_.add_arch(arch);
+  builder_.add_rx_bits(rx_bits);
+  builder_.add_qt_version(qt_version);
+  builder_.add_version(version);
   return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Global> CreateGlobalDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *version = nullptr,
+    const char *qt_version = nullptr,
+    int32_t rx_bits = 0,
+    const char *arch = nullptr,
+    const char *os = nullptr) {
+  auto version__ = version ? _fbb.CreateString(version) : 0;
+  auto qt_version__ = qt_version ? _fbb.CreateString(qt_version) : 0;
+  auto arch__ = arch ? _fbb.CreateString(arch) : 0;
+  auto os__ = os ? _fbb.CreateString(os) : 0;
+  return sdrangel::CreateGlobal(
+      _fbb,
+      version__,
+      qt_version__,
+      rx_bits,
+      arch__,
+      os__);
 }
 
 flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &_fbb, const GlobalT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
@@ -74,8 +156,10 @@ flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &_fbb, c
 struct CaptureT : public flatbuffers::NativeTable {
   typedef Capture TableType;
   int32_t sample_rate;
+  uint64_t tsms;
   CaptureT()
-      : sample_rate(0) {
+      : sample_rate(0),
+        tsms(0) {
   }
 };
 
@@ -85,14 +169,19 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return CaptureTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_SAMPLE_RATE = 4
+    VT_SAMPLE_RATE = 4,
+    VT_TSMS = 6
   };
   int32_t sample_rate() const {
     return GetField<int32_t>(VT_SAMPLE_RATE, 0);
   }
+  uint64_t tsms() const {
+    return GetField<uint64_t>(VT_TSMS, 0);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_SAMPLE_RATE) &&
+           VerifyField<uint64_t>(verifier, VT_TSMS) &&
            verifier.EndTable();
   }
   CaptureT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -105,6 +194,9 @@ struct CaptureBuilder {
   flatbuffers::uoffset_t start_;
   void add_sample_rate(int32_t sample_rate) {
     fbb_.AddElement<int32_t>(Capture::VT_SAMPLE_RATE, sample_rate, 0);
+  }
+  void add_tsms(uint64_t tsms) {
+    fbb_.AddElement<uint64_t>(Capture::VT_TSMS, tsms, 0);
   }
   explicit CaptureBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -120,8 +212,10 @@ struct CaptureBuilder {
 
 inline flatbuffers::Offset<Capture> CreateCapture(
     flatbuffers::FlatBufferBuilder &_fbb,
-    int32_t sample_rate = 0) {
+    int32_t sample_rate = 0,
+    uint64_t tsms = 0) {
   CaptureBuilder builder_(_fbb);
+  builder_.add_tsms(tsms);
   builder_.add_sample_rate(sample_rate);
   return builder_.Finish();
 }
@@ -261,6 +355,11 @@ inline GlobalT *Global::UnPack(const flatbuffers::resolver_function_t *_resolver
 inline void Global::UnPackTo(GlobalT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
+  { auto _e = version(); if (_e) _o->version = _e->str(); };
+  { auto _e = qt_version(); if (_e) _o->qt_version = _e->str(); };
+  { auto _e = rx_bits(); _o->rx_bits = _e; };
+  { auto _e = arch(); if (_e) _o->arch = _e->str(); };
+  { auto _e = os(); if (_e) _o->os = _e->str(); };
 }
 
 inline flatbuffers::Offset<Global> Global::Pack(flatbuffers::FlatBufferBuilder &_fbb, const GlobalT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -271,8 +370,18 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const GlobalT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _version = _o->version.empty() ? 0 : _fbb.CreateString(_o->version);
+  auto _qt_version = _o->qt_version.empty() ? 0 : _fbb.CreateString(_o->qt_version);
+  auto _rx_bits = _o->rx_bits;
+  auto _arch = _o->arch.empty() ? 0 : _fbb.CreateString(_o->arch);
+  auto _os = _o->os.empty() ? 0 : _fbb.CreateString(_o->os);
   return sdrangel::CreateGlobal(
-      _fbb);
+      _fbb,
+      _version,
+      _qt_version,
+      _rx_bits,
+      _arch,
+      _os);
 }
 
 inline CaptureT *Capture::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
@@ -285,6 +394,7 @@ inline void Capture::UnPackTo(CaptureT *_o, const flatbuffers::resolver_function
   (void)_o;
   (void)_resolver;
   { auto _e = sample_rate(); _o->sample_rate = _e; };
+  { auto _e = tsms(); _o->tsms = _e; };
 }
 
 inline flatbuffers::Offset<Capture> Capture::Pack(flatbuffers::FlatBufferBuilder &_fbb, const CaptureT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -296,9 +406,11 @@ inline flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const CaptureT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _sample_rate = _o->sample_rate;
+  auto _tsms = _o->tsms;
   return sdrangel::CreateCapture(
       _fbb,
-      _sample_rate);
+      _sample_rate,
+      _tsms);
 }
 
 inline AnnotationT *Annotation::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
@@ -357,21 +469,37 @@ inline flatbuffers::Offset<Descr> CreateDescr(flatbuffers::FlatBufferBuilder &_f
 }
 
 inline const flatbuffers::TypeTable *GlobalTypeTable() {
+  static const flatbuffers::TypeCode type_codes[] = {
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_INT, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const char * const names[] = {
+    "version",
+    "qt_version",
+    "rx_bits",
+    "arch",
+    "os"
+  };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr
+    flatbuffers::ST_TABLE, 5, type_codes, nullptr, nullptr, names
   };
   return &tt;
 }
 
 inline const flatbuffers::TypeTable *CaptureTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
-    { flatbuffers::ET_INT, 0, -1 }
+    { flatbuffers::ET_INT, 0, -1 },
+    { flatbuffers::ET_ULONG, 0, -1 }
   };
   static const char * const names[] = {
-    "sample_rate"
+    "sample_rate",
+    "tsms"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 1, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, names
   };
   return &tt;
 }
