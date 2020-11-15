@@ -170,7 +170,7 @@ void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisitor *vis
     }
     visitor->EndSequence();
 }
-                 
+
 json
 flatbuffer_field_to_json(const uint8_t *val,
                          flatbuffers::ElementaryType type,
@@ -329,6 +329,7 @@ flatbuffer_field_to_json(const uint8_t *val,
             }
         }
     }
+    return json(0);
 }
 
 /**

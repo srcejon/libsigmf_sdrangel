@@ -42,6 +42,7 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
 
     void EndSequence() override;
 
+    using flatbuffers::IterationVisitor::Field;
     void Field(size_t field_idx, size_t set_idx, flatbuffers::ElementaryType e_type,
                bool is_vector, const flatbuffers::TypeTable *type_table,
                const char *name, const uint8_t *val, json jj);

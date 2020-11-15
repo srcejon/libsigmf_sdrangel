@@ -138,6 +138,9 @@ namespace sigmf {
                 return namespace_part;
             }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+
             /**
              * Iterate through the types in tuple (namespaces) creating a json object with field
              * names prefixed by the object's owning namespace
@@ -195,6 +198,8 @@ namespace sigmf {
             }
         };
 
+#pragma GCC diagnostic pop
+
         /**
          * Template specialization for reaching the end of compile-time loop over Tuple
          * @tparam Index
@@ -204,11 +209,16 @@ namespace sigmf {
         template<size_t Index, class Tuple>
         struct TupleIterator<Index, Tuple, true> {
             static json to_json(const Tuple &tp, bool include_defaults) {
+                (void) tp;
+                (void) include_defaults;
                 json r;
                 return r;
             }
 
-            static void from_json(const Tuple &tp, json j) {
+            static void from_json(const Tuple &tp, json j)
+            {
+                (void) tp;
+                (void) j;
             }
         };
 
