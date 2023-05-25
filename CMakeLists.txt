@@ -126,6 +126,8 @@ set(LIBSIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 ########################################################################
 # Our interface target that downstream have to use
 ########################################################################
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 add_library(libsigmf
   SHARED
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/flatbuffers_json_visitor.cpp
